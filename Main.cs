@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+using BenchmarkDotNet.Running;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Platformer.Drawing;
@@ -16,16 +17,17 @@ namespace Platformer
         public static Random rand = new Random();
         public static Vector2 worldPosition = new Vector2(0);
         public static int Right = 0;
+        public float frames = 0;
 
         public Main()
         {
             Right = Window.ClientBounds.Right;
             player = new Player();
+            player.position.X += 300;
             Obstacle.SetObstacles();
             Dust.SetDusts();
             graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            Generator.MakeWorld();
             Window.AllowUserResizing = true;
             Window.ClientSizeChanged += new EventHandler<EventArgs>(Window_ClientSizeChanged);
         }
@@ -53,6 +55,9 @@ namespace Platformer
             player.Update();
             Obstacle.UpdateAll();
             Dust.UpdateAll();
+            frames++;
+            if (frames == 20)
+                BenchmarkRunner.Run<Generator>();
             if (graphics.PreferredBackBufferWidth != Window.ClientBounds.Width)
             {
                 graphics.PreferredBackBufferWidth = Window.ClientBounds.Width;
